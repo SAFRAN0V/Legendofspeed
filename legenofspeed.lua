@@ -112,7 +112,7 @@ btnColeta.MouseButton1Click:Connect(function()
     if ativo then
         task.spawn(function()
             while ativo do
-                for i = 1, 15 do
+                for i = 1, 25 do
                     remote:FireServer("collectOrb", "Ethereal Orb", cidadeSelecionada)
                 end
                 task.wait()
