@@ -16,7 +16,7 @@ local titleBar = Instance.new("TextLabel", frame)
 titleBar.Size = UDim2.new(1, 0, 0, 30)
 titleBar.Position = UDim2.new(0, 0, 0, 0)
 titleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-titleBar.Text = " Painel de Farm"
+titleBar.Text = "  Painel de Farm"
 titleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleBar.TextXAlignment = Enum.TextXAlignment.Left
 titleBar.Font = Enum.Font.SourceSansBold
@@ -69,46 +69,54 @@ btnColeta.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 
 -- Lógica do Botão Minimizar
 btnMinimizar.MouseButton1Click:Connect(function()
-minimizado = not minimizado
-container.Visible = not minimizado
-if minimizado then
-frame.Size = UDim2.new(0, 220, 0, 30)
-btnMinimizar.Text = "+"
-else
-frame.Size = UDim2.new(0, 220, 0, 200)
-btnMinimizar.Text = "-"
-end
+    minimizado = not minimizado
+    container.Visible = not minimizado
+    if minimizado then
+        frame.Size = UDim2.new(0, 220, 0, 30)
+        btnMinimizar.Text = "+"
+    else
+        frame.Size = UDim2.new(0, 220, 0, 200)
+        btnMinimizar.Text = "-"
+    end
 end)
 
 -- Lógica Anti-AFK
 game.Players.LocalPlayer.Idled:Connect(function()
-VirtualUser:CaptureController()
-VirtualUser:ClickButton2(Vector2.new())
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
 end)
 
 -- Lógica Botão Pet
 btnPet.MouseButton1Click:Connect(function()
-ReplicatedStorage:WaitForChild("rEvents"):WaitForChild("openCrystalRemote"):InvokeServer("openCrystal", "Electro Legends Crystal")
+    ReplicatedStorage:WaitForChild("rEvents"):WaitForChild("openCrystalRemote"):InvokeServer("openCrystal", "Electro Legends Crystal")
 end)
 
 -- Lógica de Seleção
 btnJungle.MouseButton1Click:Connect(function()
-cidadeSelecionada = "Speed Jungle"
-btnJungle.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
-btnCity.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    cidadeSelecionada = "Speed Jungle"
+    btnJungle.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+    btnCity.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 end)
 
 btnCity.MouseButton1Click:Connect(function()
-cidadeSelecionada = "City"
-btnCity.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
-btnJungle.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    cidadeSelecionada = "City"
+    btnCity.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+    btnJungle.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 end)
 
 -- Lógica de Coleta (10x Velocidade)
 btnColeta.MouseButton1Click:Connect(function()
-ativo = not ativo
-btnColeta.Text = ativo and "PARAR" or "INICIAR COLETA"
-btnColeta.BackgroundColor3 = ativo and Color3.fromRGB(200, 0, 0) or Color3.fromRGB(0, 200, 0)
-if ativo then
-task.spawn(function()
-w
+    ativo = not ativo
+    btnColeta.Text = ativo and "PARAR" or "INICIAR COLETA"
+    btnColeta.BackgroundColor3 = ativo and Color3.fromRGB(200, 0, 0) or Color3.fromRGB(0, 200, 0)
+    if ativo then
+        task.spawn(function()
+            while ativo do
+                for i = 1, 15 do
+                    remote:FireServer("collectOrb", "Ethereal Orb", cidadeSelecionada)
+                end
+                task.wait()
+            end
+        end)
+    end
+end)
