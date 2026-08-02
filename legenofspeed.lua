@@ -11,7 +11,7 @@ frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.Active = true
 frame.Draggable = true
 
--- Barra de Título (Para arrastar a janela de qualquer lugar dela)
+-- Barra de Título
 local titleBar = Instance.new("TextLabel", frame)
 titleBar.Size = UDim2.new(1, 0, 0, 30)
 titleBar.Position = UDim2.new(0, 0, 0, 0)
@@ -32,7 +32,7 @@ btnMinimizar.TextColor3 = Color3.fromRGB(255, 255, 255)
 btnMinimizar.Font = Enum.Font.SourceSansBold
 btnMinimizar.TextSize = 16
 
--- Container para os botões (para sumirem quando minimizar)
+-- Container para os botões
 local container = Instance.new("Frame", frame)
 container.Size = UDim2.new(1, 0, 1, -30)
 container.Position = UDim2.new(0, 0, 0, 30)
@@ -104,18 +104,20 @@ btnCity.MouseButton1Click:Connect(function()
     btnJungle.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 end)
 
--- Lógica de Coleta (10x Velocidade)
+-- Lógica de Coleta Otimizada (Sem travar o buffer e com parada instantânea)
 btnColeta.MouseButton1Click:Connect(function()
     ativo = not ativo
     btnColeta.Text = ativo and "PARAR" or "INICIAR COLETA"
     btnColeta.BackgroundColor3 = ativo and Color3.fromRGB(200, 0, 0) or Color3.fromRGB(0, 200, 0)
+    
     if ativo then
         task.spawn(function()
             while ativo do
-                for i = 1, 12 do
+                for i = 1, 14 do
+                    if not ativo then break end
                     remote:FireServer("collectOrb", "Ethereal Orb", cidadeSelecionada)
                 end
-                task.wait()
+                task.wait(0.01) -- Pequeno respiro para o servidor processar limpo
             end
         end)
     end
