@@ -117,7 +117,7 @@ btnColeta.MouseButton1Click:Connect(function()
                     if not ativo then break end
                     remote:FireServer("collectOrb", "Ethereal Orb", cidadeSelecionada)
                 end
-                task.wait(0.01) -- Pequeno respiro para o servidor processar limpo
+                task.wait(0.05) -- Pequeno respiro para o servidor processar limpo
             end
         end)
     end
