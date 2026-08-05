@@ -32,7 +32,7 @@ frame.BackgroundColor3 = Color3.fromRGB(248, 249, 250)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
-frame.ClipsDescendants = true -- Garante que nada saia da borda arredondada principal
+frame.ClipsDescendants = true -- Corta perfeitamente qualquer conteúdo que ultrapasse o arredondamento
 
 local uiCornerMain = Instance.new("UICorner", frame)
 uiCornerMain.CornerRadius = UDim.new(0, 10)
@@ -41,7 +41,7 @@ local uiStrokeMain = Instance.new("UIStroke", frame)
 uiStrokeMain.Color = Color3.fromRGB(215, 50, 50)
 uiStrokeMain.Thickness = 1.8
 
--- Barra de Título (Arredondada inteira, sem gambiarra de cantos retos)
+-- Barra de Título (Arredondada e sem preencher as quinas com gambiarras)
 local titleBar = Instance.new("Frame", frame)
 titleBar.Size = UDim2.new(1, 0, 0, 38)
 titleBar.BackgroundColor3 = Color3.fromRGB(235, 238, 242)
@@ -50,12 +50,12 @@ titleBar.BorderSizePixel = 0
 local uiCornerTitle = Instance.new("UICorner", titleBar)
 uiCornerTitle.CornerRadius = UDim.new(0, 10)
 
--- Adesivo Arasaka Logo
+-- Adesivo Arasaka Logo (ID corrigido e formato assetid completo para garantir carregamento)
 local decalImage = Instance.new("ImageLabel", titleBar)
 decalImage.Size = UDim2.new(0, 24, 0, 24)
 decalImage.Position = UDim2.new(0, 8, 0.5, -12)
 decalImage.BackgroundTransparency = 1
-decalImage.Image = "rbxassetid://105715630567372"
+decalImage.Image = "rbxassetid://132397224962668"
 
 -- Nome "ARASAKA" Centralizado na Barra de Título
 local titleText = Instance.new("TextLabel", titleBar)
@@ -132,7 +132,7 @@ btnColeta.BackgroundColor3 = Color3.fromRGB(255, 230, 230)
 btnColeta.TextColor3 = Color3.fromRGB(180, 30, 30)
 btnColeta.Font = Enum.Font.GothamBold
 
--- Lógica do Botão Minimizar com Animação Suave
+-- Lógica do Botão Minimizar com Animação Limpa
 btnMinimizar.MouseButton1Click:Connect(function()
 	playClickSound()
 	minimizado = not minimizado
@@ -193,7 +193,7 @@ btnColeta.MouseButton1Click:Connect(function()
 		
 		task.spawn(function()
 			while ativo do
-				for i = 1, 9 do
+				for i = 1, 10 do
 					if not ativo then break end
 					remote:FireServer("collectOrb", "Ethereal Orb", cidadeSelecionada)
 				end
