@@ -3,9 +3,19 @@ local VirtualUser = game:GetService("VirtualUser")
 local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local remote = ReplicatedStorage:WaitForChild("rEvents"):WaitForChild("orbEvent")
+
+-- 1. SISTEMA ANTI-DUPLICAÇÃO E PROTEÇÃO DA UI
+local targetGui = (pcall(function() return gethui() end) and gethui()) or (pcall(function() return CoreGui end) and CoreGui) or player:WaitForChild("PlayerGui")
+local uiName = "ArasakaPanel_Gui"
+
+if targetGui:FindFirstChild(uiName) then
+	targetGui[uiName]:Destroy()
+end
 
 -- Criar o som de clique futurista
 local clickSound = Instance.new("Sound", SoundService)
@@ -21,8 +31,8 @@ end
 local targetPosition = Vector3.new(-15269.35, 422.82, 5570.99)
 
 -- Configuração da UI Principal (Estilo Branco com Detalhes Vermelhos - ARASAKA)
-local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-screenGui.Name = "ArasakaPanel_Gui"
+local screenGui = Instance.new("ScreenGui", targetGui)
+screenGui.Name = uiName
 screenGui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", screenGui)
@@ -32,7 +42,7 @@ frame.BackgroundColor3 = Color3.fromRGB(248, 249, 250)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
-frame.ClipsDescendants = true -- Corta perfeitamente qualquer conteúdo que ultrapasse o arredondamento
+frame.ClipsDescendants = true 
 
 local uiCornerMain = Instance.new("UICorner", frame)
 uiCornerMain.CornerRadius = UDim.new(0, 10)
@@ -41,7 +51,7 @@ local uiStrokeMain = Instance.new("UIStroke", frame)
 uiStrokeMain.Color = Color3.fromRGB(215, 50, 50)
 uiStrokeMain.Thickness = 1.8
 
--- Barra de Título (Arredondada e sem preencher as quinas com gambiarras)
+-- Barra de Título
 local titleBar = Instance.new("Frame", frame)
 titleBar.Size = UDim2.new(1, 0, 0, 38)
 titleBar.BackgroundColor3 = Color3.fromRGB(235, 238, 242)
@@ -50,14 +60,14 @@ titleBar.BorderSizePixel = 0
 local uiCornerTitle = Instance.new("UICorner", titleBar)
 uiCornerTitle.CornerRadius = UDim.new(0, 10)
 
--- Adesivo Arasaka Logo (ID corrigido e formato assetid completo para garantir carregamento)
+-- Adesivo Arasaka Logo
 local decalImage = Instance.new("ImageLabel", titleBar)
 decalImage.Size = UDim2.new(0, 24, 0, 24)
 decalImage.Position = UDim2.new(0, 8, 0.5, -12)
 decalImage.BackgroundTransparency = 1
 decalImage.Image = "rbxassetid://132397224962668"
 
--- Nome "ARASAKA" Centralizado na Barra de Título
+-- Nome "ARASAKA"
 local titleText = Instance.new("TextLabel", titleBar)
 titleText.Size = UDim2.new(1, 0, 1, 0)
 titleText.Position = UDim2.new(0, 0, 0, 0)
@@ -93,8 +103,9 @@ container.BackgroundTransparency = 1
 local cidadeSelecionada = "Speed Jungle"
 local ativo = false
 local minimizado = false
+local conexaoRender = nil
 
--- Função Auxiliar para Criar Botões Padronizados (Tema Branco com Detalhes Vermelhos)
+-- Função Auxiliar para Criar Botões Padronizados
 local function tabularButton(parent, size, pos, text)
 	local btn = Instance.new("TextButton", parent)
 	btn.Size = size
@@ -112,18 +123,15 @@ local function tabularButton(parent, size, pos, text)
 	return btn
 end
 
--- Botões de Seleção de Cidade (Jungle / City)
+-- Botões de Seleção de Cidade
 local btnJungle = tabularButton(container, UDim2.new(0.44, 0, 0, 34), UDim2.new(0.04, 0, 0.05, 0), "Jungle")
 local btnCity = tabularButton(container, UDim2.new(0.44, 0, 0, 34), UDim2.new(0.52, 0, 0.05, 0), "City")
 
--- Destacar a seleção inicial (Jungle selecionado com tom vermelho suave)
 btnJungle.BackgroundColor3 = Color3.fromRGB(255, 225, 225)
 btnJungle.TextColor3 = Color3.fromRGB(180, 30, 30)
 
--- Botão Tp Jungle
+-- Botões Funcionais
 local btnTpJungle = tabularButton(container, UDim2.new(0.92, 0, 0, 34), UDim2.new(0.04, 0, 0.30, 0), "Tp Jungle")
-
--- Botão Comprar Pet
 local btnPet = tabularButton(container, UDim2.new(0.92, 0, 0, 34), UDim2.new(0.04, 0, 0.55, 0), "Comprar Pet Omega")
 
 -- Botão Principal de Coleta
@@ -132,7 +140,7 @@ btnColeta.BackgroundColor3 = Color3.fromRGB(255, 230, 230)
 btnColeta.TextColor3 = Color3.fromRGB(180, 30, 30)
 btnColeta.Font = Enum.Font.GothamBold
 
--- Lógica do Botão Minimizar com Animação Limpa
+-- Lógica do Botão Minimizar
 btnMinimizar.MouseButton1Click:Connect(function()
 	playClickSound()
 	minimizado = not minimizado
@@ -146,11 +154,12 @@ end)
 
 -- Lógica Anti-AFK
 player.Idled:Connect(function()
-	VirtualUser:CaptureController()
-	VirtualUser:ClickButton2(Vector2.new())
+	pcall(function()
+		VirtualUser:CaptureController()
+		VirtualUser:ClickButton2(Vector2.new())
+	end)
 end)
 
--- Lógica Botão Tp Jungle
 btnTpJungle.MouseButton1Click:Connect(function()
 	playClickSound()
 	local character = player.Character
@@ -159,17 +168,16 @@ btnTpJungle.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Lógica Botão Pet
 btnPet.MouseButton1Click:Connect(function()
 	playClickSound()
-	ReplicatedStorage:WaitForChild("rEvents"):WaitForChild("openCrystalRemote"):InvokeServer("openCrystal", "Electro Legends Crystal")
+	pcall(function()
+		ReplicatedStorage:WaitForChild("rEvents"):WaitForChild("openCrystalRemote"):InvokeServer("openCrystal", "Electro Legends Crystal")
+	end)
 end)
 
--- Lógica de Seleção de Cidades
 btnJungle.MouseButton1Click:Connect(function()
 	playClickSound()
 	cidadeSelecionada = "Speed Jungle"
-	
 	TweenService:Create(btnJungle, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 225, 225), TextColor3 = Color3.fromRGB(180, 30, 30)}):Play()
 	TweenService:Create(btnCity, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(238, 241, 245), TextColor3 = Color3.fromRGB(45, 50, 58)}):Play()
 end)
@@ -177,12 +185,11 @@ end)
 btnCity.MouseButton1Click:Connect(function()
 	playClickSound()
 	cidadeSelecionada = "City"
-	
 	TweenService:Create(btnCity, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 225, 225), TextColor3 = Color3.fromRGB(180, 30, 30)}):Play()
 	TweenService:Create(btnJungle, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(238, 241, 245), TextColor3 = Color3.fromRGB(45, 50, 58)}):Play()
 end)
 
--- Lógica de Coleta Otimizada
+-- 3. Lógica de Coleta com o Bloco de 7 Original Otimizado
 btnColeta.MouseButton1Click:Connect(function()
 	playClickSound()
 	ativo = not ativo
@@ -193,10 +200,15 @@ btnColeta.MouseButton1Click:Connect(function()
 		
 		task.spawn(function()
 			while ativo do
-				for i = 1, 7 do
-					if not ativo then break end
-					remote:FireServer("collectOrb", "Ethereal Orb", cidadeSelecionada)
+				if not screenGui or not screenGui.Parent then break end
+				
+				for i = 1, 8 do
+					if not ativo or not screenGui or not screenGui.Parent then break end
+					pcall(function()
+						remote:FireServer("collectOrb", "Ethereal Orb", cidadeSelecionada)
+					end)
 				end
+				
 				task.wait(0.01)
 			end
 		end)
