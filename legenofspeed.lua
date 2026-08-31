@@ -20,7 +20,7 @@ end
 -- Criar o som de clique futurista
 local clickSound = Instance.new("Sound", SoundService)
 clickSound.SoundId = "rbxassetid://4499400560"
-clickSound.Volume = 0.6
+clickSound.Volume = 1
 clickSound.Name = "ButtonClickSound"
 
 local function playClickSound()
